@@ -2,7 +2,6 @@
 
 let fs = require('fs'),
     mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
     Listing = require('./ListingSchema.js'),
     config = require('./config');
 
@@ -21,8 +20,7 @@ client.connect(err => {
 
         //Add each JSON entry to DB.
         listingJSON.entries.forEach(function(listing) {
-
-            let listingDoc = new Listing.Model(listing);
+            let listingDoc = new Listing(listing);
             collection.insertOne(listingDoc);
 
         });
