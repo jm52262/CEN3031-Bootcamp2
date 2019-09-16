@@ -1,36 +1,66 @@
-/* Add all the required libraries*/
+//Required Libraries
+mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    Listing = require('./ListingSchema.js'),
+    config = require('./config');
 
-/* Connect to your database using mongoose - remember to keep your key secret*/
+//Connect to DB
+let collection;
+const MongoClient = require('mongodb').MongoClient;
+const uri = config.db.uri;
+const client = new MongoClient(uri, { useNewUrlParser: true });
+client.connect(err => {
+    collection = client.db("Bootcamp2").collection("listings");
 
-/* Fill out these functions using Mongoose queries*/
-//Check out - https://mongoosejs.com/docs/queries.html
+    findLibraryWest();
+    removeCable();
+    updatePhelpsLab();
+    retrieveAllListings();
 
-var findLibraryWest = function() {
-  /* 
-    Find the document that contains data corresponding to Library West,
-    then log it to the console. 
-   */
-};
-var removeCable = function() {
-  /*
-    Find the document with the code 'CABL'. This cooresponds with courses that can only be viewed 
-    on cable TV. Since we live in the 21st century and most courses are now web based, go ahead
-    and remove this listing from your database and log the document to the console. 
-   */
-};
-var updatePhelpsLab = function() {
-  /*
-    Phelps Lab address is incorrect. Find the listing, update it, and then 
-    log the updated document to the console. 
-   */
-};
-var retrieveAllListings = function() {
-  /* 
-    Retrieve all listings in the database, and log them to the console. 
-   */
+});
+
+let findLibraryWest = function() {
+
+    //Finds the Library West doc and logs to console.
+    collection.find({ code : "LBW" }).next()
+        .then(doc => console.log("Library West:\n", doc));
+
 };
 
-findLibraryWest();
-removeCable();
-updatePhelpsMemorial();
-retrieveAllListings();
+let removeCable = function() {
+
+    // Finds the cable listing and logs to console.
+    collection.find({ code : "CABL" }).next()
+        .then(doc => console.log("Cable Listing:\n", doc));
+
+    //Removes the cable listing doc from the DB.
+    collection.deleteMany({ code : "CABL" });
+
+
+};
+
+let updatePhelpsLab = function() {
+
+    //Updates the address field of the Phelps Lab doc in the DB.
+    collection.updateMany(
+        { code : "PHL" },
+        {
+            $set: {
+                address: "1953 Museum Rd, Gainesville, FL 32603"
+            }
+        }
+    );
+
+    //Finds the updated Phelps Lab doc and logs to console.
+    let phelpsLab = collection.findOne({ code : "PHL" });
+    console.log(phelpsLab);
+
+};
+
+let retrieveAllListings = function () {
+
+    //Finds all listings in the DB and logs to console.
+    let allListings = collection.find();
+    console.log(allListings);
+
+};
